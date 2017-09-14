@@ -102,4 +102,5 @@ ENV/
 
 #Google drive
 .ini
+*.ini
 .idea/
