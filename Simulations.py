@@ -55,41 +55,34 @@ def bm_majority_vote(ballots):
 
 
 # Creates the Voters profile according to the given Scenario
-def create_active_voters(pop, n, s):
-    # Sample N votes from the population
+def create_ballots(pop, agents, s):
+    for agent in agents:
+        agent.isActive = True
     if s == 'B' or s == 'b':
-        print 'Scenario B'
-        voters = sample(pop, n)
-    # Sample N active + (PopSize - N) proxy weights
+        ballots = agents
     elif s == 'P' or s == 'p':
-        print 'Scenario P'
-        proxies = sample(pop, n)
-        voters = assign_proxies(proxies, pop)
+        ballots = assign_proxies(agents, pop)
     elif 'V' in s or 'v' in s:
         print 'Scenario P + V'
         proxies = sample(pop, n)
-        voters = create_virtual(proxies, pop)
+        ballots = create_virtual(proxies, pop)
     else:
-        print 'Scenario E'
-        voters = pop
-    return voters
+        ballots = pop
+    return ballots
 
 
 # This will calculate the weight for each proxy
-# TODO: need to improve the weight calculation performance - consider using a dictionary for the repeating agents
-# TODO: The problem is that all agents with same profile will choose the same proxy
-def assign_proxies(prox, pop):
-    newproxies = {i: 0 for i in prox}
-    popdict = {}
-    for i in pop:
-        popdict[i] = [prox[0], hamming(i, prox[0]) + uniform(-0.1, 0.1)]
-        for j in prox:
-            if popdict[i][1] > hamming(i, j):
-                popdict[i] = [j, hamming(i, j) + uniform(-0.1, 0.1)]
-        newproxies[popdict[i][0]] += 1
-    assert sum(newproxies.values()) == PopSize, 'The weights of the proxies incorrect'
-    print newproxies
+def assign_proxies(proxies, pop):
+    for agent in pop:
+        agent.calc_dist_mat(proxies)
+        agent.set_proxy()
     voters = []
-    for i in newproxies:
-        voters.extend([i] * newproxies[i])
+    for prox in proxies:
+        voters += [prox] * prox.weight
     return voters
+
+
+def reset_active_agents(agents):
+    for agent in agents:
+        agent.weight = 1
+        agent.isActive = False

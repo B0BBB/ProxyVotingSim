@@ -20,17 +20,22 @@ class VotingAgent:
         self.weight = 1
         self.distance = hamming(Truth, location)
         self.dist_mat = {}
-        self.virtual_location = location
+        self.virtual_location = None
         self.proxy = None
 
     def calc_dist_mat(self, proxies):
         for i in proxies:
-            self.dist_mat[i] = hamming(self.location, i) + uniform(0, 0.1)
+            self.dist_mat[i] = hamming(self.location, i.location) + uniform(0, 0.1)
 
     def set_proxy(self, v=virtual_scenario):
         assert not v, 'The scenario is Virtual, Virtual proxy should be calculated'
+        if self.isActive:
+            self.proxy = self.location
+            # print 'This is a proxy', self, 'location: ', self.location
+            return
         self.proxy = min(self.dist_mat, key=self.dist_mat.get)
-        print 'The chosen proxy is :', self.proxy
+        self.proxy.weight += 1
+        # print 'The chosen proxy is :', self.proxy, 'location: ', self.proxy.location
 
     def set_virtual_proxy(self, v=virtual_scenario):
         assert v, 'The scenario is not Virtual, regular proxy should be calculated'
