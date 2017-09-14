@@ -9,7 +9,7 @@ from config import *
 
 
 class VotingAgent:
-    if 'V' in scenario or 'v' in scenario:
+    if 'V' in Scenario or 'v' in Scenario:
         virtual_scenario = True
     else:
         virtual_scenario = False

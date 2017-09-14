@@ -1,11 +1,11 @@
 from collections import OrderedDict
 
 # This is the configuration module, which will set the Global variables
-PopSize = 100
-K = 5
+PopSize = 10
+K = 3
 Truth = (0,) * K
-PHI = 1
-N = 15
+PHI = 0.5
+N = 3
 Mel = OrderedDict()
 Vnearest = 3
-scenario = 'B'
+Scenario = 'B'

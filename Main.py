@@ -13,13 +13,16 @@ def main():
     data = create_f_pop(PopSize, Mel)
     t2 = time()
     print 'Data set creation took :', t2 - t1
-    scenario = raw_input('Enter Scenario B/P/E/P+V: \n')
-    while scenario != '':
+    boop = 0
+    scenario = Scenario
+    while boop < 5:
         t1 = time()
         print '\nComputing OutCome :'
         activeAgents = create_active_voters(data, N, scenario)
         if scenario == 'B' or scenario == 'b':
-            print 'The Active agents are: ', activeAgents
+            print 'The Active agents are: '
+            for i in activeAgents:
+                print i.location
         t2 = time()
         result = bm_majority_vote(activeAgents)
         print 'The result vector is: ', result
@@ -32,7 +35,7 @@ def main():
             print (t2 - t1) / 60, 'Minutes'
         print 'The Computation took:', t3 - t2
         print 'Outcome Computation took (total):', t3 - t1
-        scenario = raw_input('Enter Scenario B/P/E/P+V: \n')
+        boop += 1
 
 
 if __name__ == '__main__':

@@ -37,11 +37,11 @@ def bm_majority_vote(ballots):
     for i in range(K):
         m = None
         count = 0
-        for j in range(len(ballots)):
+        for agent in ballots:
             if count == 0:
-                m = ballots[j][i]
+                m = agent.location[i]
                 count = 1
-            elif m == ballots[j][i]:
+            elif m == agent.location[i]:
                 count += 1
             else:
                 count -= 1
