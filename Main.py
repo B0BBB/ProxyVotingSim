@@ -17,10 +17,10 @@ def main():
         activeAgents = sample(data, N)
         print 'Simulation number ', run + 1
         for scenario in Scenario:
+            reset_active_agents(data, scenario)
             ballots = create_ballots(data, activeAgents, scenario)
             result = bm_majority_vote(ballots)
             distanceTable[scenario] += [hamming(result, Truth)]
-            reset_active_agents(activeAgents)
             # print 'Scenario ', scenario, 'result :', hamming(result, Truth)
     for scenario in Scenario:
         print 'the average distance for ', scenario, 'is ', float(sum(distanceTable[scenario])) / float(

@@ -39,9 +39,9 @@ def bm_majority_vote(ballots):
         count = 0
         for agent in ballots:
             if count == 0:
-                m = agent.location[i]
+                m = agent.get_vote()[i]
                 count = 1
-            elif m == agent.location[i]:
+            elif m == agent.get_vote()[i]:
                 count += 1
             else:
                 count -= 1
@@ -63,10 +63,10 @@ def create_ballots(pop, agents, s):
     elif s == 'P' or s == 'p':
         ballots = assign_proxies(agents, pop)
     elif 'V' in s or 'v' in s:
-        print 'Scenario P + V'
-        proxies = sample(pop, n)
-        ballots = create_virtual(proxies, pop)
+        ballots = assign_virtual_proxies(agents, pop)
     else:
+        for agent in pop:
+            agent.isActive = True
         ballots = pop
     return ballots
 
@@ -82,7 +82,17 @@ def assign_proxies(proxies, pop):
     return voters
 
 
-def reset_active_agents(agents):
-    for agent in agents:
-        agent.weight = 1
-        agent.isActive = False
+def assign_virtual_proxies(proxies, pop):
+    for agent in pop:
+        agent.calc_dist_mat(proxies)
+        agent.set_virtual_proxy()
+    return pop
+
+
+def reset_active_agents(pop, s):
+    for agent in pop:
+        agent.reset_agent()
+    if 'V' in s or 'v' in s:
+        VotingAgent.virtual_scenario = True
+    else:
+        VotingAgent.virtual_scenario = False

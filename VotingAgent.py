@@ -9,10 +9,7 @@ from config import *
 
 
 class VotingAgent:
-    if 'V' in Scenario or 'v' in Scenario:
-        virtual_scenario = True
-    else:
-        virtual_scenario = False
+    virtual_scenario = None
 
     def __init__(self, location):
         self.location = location
@@ -20,7 +17,7 @@ class VotingAgent:
         self.weight = 1
         self.distance = hamming(Truth, location)
         self.dist_mat = {}
-        self.virtual_location = None
+        self.virtual_location = []
         self.proxy = None
 
     def calc_dist_mat(self, proxies):
@@ -37,26 +34,34 @@ class VotingAgent:
         self.proxy.weight += 1
         # print 'The chosen proxy is :', self.proxy, 'location: ', self.proxy.location
 
-    def set_virtual_proxy(self, v=virtual_scenario):
-        assert v, 'The scenario is not Virtual, regular proxy should be calculated'
+    def set_virtual_proxy(self):
+        assert VotingAgent.virtual_scenario, 'The scenario is not Virtual, regular proxy should be calculated'
+        assert self.dist_mat, 'Proxies distances matrix is empty'
         nearest_proxies = sorted(self.dist_mat, key=self.dist_mat.get)[-Vnearest:]
+        templist = []
         for i in range(K):
+            templist.insert(i, 0)
             for j in nearest_proxies:
-                self.virtual_location += nearest_proxies[j][i]
-        for i, j in enumerate(self.virtual_location):
-            if j > Vnearest/2:
-                self.virtual_location[i] = 1
-            elif j < Vnearest/2:
-                self.virtual_location[i] = 0
+                templist[i] += j.location[i]
+        for i, j in enumerate(templist):
+            if j > Vnearest/2.0:
+                self.virtual_location.insert(i, 1)
+            elif j < Vnearest/2.0:
+                self.virtual_location.insert(i, 0)
             else:
-                self.virtual_location[i] = randint(0, 1)
-        print 'The virtual vote is: ', self.virtual_location
+                self.virtual_location.insert(i, randint(0, 1))
 
-    def get_vote(self, v=virtual_scenario):
+    def get_vote(self):
         if self.isActive:
             return self.location
-        elif v:
-            self.set_virtual_proxy()
+        elif VotingAgent.virtual_scenario:
             return self.virtual_location
         else:
-            return self.proxy
+            return self.proxy.location
+
+    def reset_agent(self):
+        self.isActive = False
+        self.weight = 1
+        self.dist_mat = {}
+        self.virtual_location = []
+        self.proxy = None
