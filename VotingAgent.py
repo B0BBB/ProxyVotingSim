@@ -27,18 +27,18 @@ class VotingAgent:
     def set_proxy(self, v=virtual_scenario):
         assert not v, 'The scenario is Virtual, Virtual proxy should be calculated'
         if self.isActive:
-            # self.proxy = self.location
-            # print 'This is a proxy', self, 'location: ', self.location
             return
         self.proxy = min(self.dist_mat, key=self.dist_mat.get)
         self.proxy.weight += 1
-        # print 'The chosen proxy is :', self.proxy, 'location: ', self.proxy.location
 
     def set_virtual_proxy(self):
         assert VotingAgent.virtual_scenario, 'The scenario is not Virtual, regular proxy should be calculated'
+        if self.isActive:
+            return
         assert self.dist_mat, 'Proxies distances matrix is empty'
-        # TODO: add 1/Vnearest to the weight of the selected proxy
         nearest_proxies = sorted(self.dist_mat, key=self.dist_mat.get)[:Vnearest]
+        for proxy in nearest_proxies:
+            proxy.weight += float(1)/Vnearest
         templist = []
         for i in range(K):
             templist.insert(i, 0)
