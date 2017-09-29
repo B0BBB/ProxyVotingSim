@@ -84,6 +84,8 @@ def assign_proxies(proxies, pop):
 
 def assign_virtual_proxies(proxies, pop):
     for agent in pop:
+        if agent.isActive:
+            continue
         agent.calc_dist_mat(proxies)
         agent.set_virtual_proxy()
     return pop

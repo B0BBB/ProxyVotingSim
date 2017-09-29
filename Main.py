@@ -17,12 +17,22 @@ def main():
     create_mel_dist(Truth, PHI, hamming, K)
     data = create_f_pop(PopSize, Mel)
     distanceTable = defaultdict(list)
+    distTable = {('Agents', 'Scenario'): [], 'Distance': []}
+    for i in range(1, N+1):
+        for j in Scenarios:
+            distTable['Agents', 'Scenario']
     counter = 1
+    # TODO: calculate the V scenario only when n>=Vnearest
     for n in range(1, N + 1):
         for run in range(Runs):
             activeAgents = sample(data, n)
             print 'Simulation number ', counter
-            for scenario in Scenario:
+            for scenario in Scenarios:
+                # If number of agents smaller than Vnearest append 0 and continue
+                if scenario.upper() == 'V':
+                    if n < Vnearest:
+                        distanceTable[(n, scenario)] += [0]
+                        continue
                 reset_active_agents(data, scenario)
                 ballots = create_ballots(data, activeAgents, scenario)
                 result = bm_majority_vote(ballots)
@@ -36,23 +46,29 @@ def main():
         fieldnames2 = ["Scenario", "Agents", "Avg dist"]
         writer.writerow(fieldnames2)
         for n, s in distanceTable:
-            writer.writerow([n, s, float(sum(distanceTable[(n, s)])) / float(len(distanceTable[(n, s)]))])
+            writer.writerow([n, s, np.average(distanceTable[(n, s)])])
     write_file.close()
-    Blist = [0] * N
-    Plist = [0] * N
-    Vlist = [0] * N
-    Elist = [0] * N
+    table = {}
+    for n, s in distanceTable:
+        table[(n, s)] = np.average(distanceTable[(n, s)])
+    # table_df = pd.DataFrame(table)
+    Blist, Plist, Vlist, Elist = [], [], [], []
     agents = range(1, N + 1)
 
-    for i in distanceTable:
-        if i[1] == 'B':
-            Blist[i[0]-1] = distanceTable[i][0]
-        elif i[1] == 'P':
-            Plist[i[0] - 1] = distanceTable[i][0]
-        elif i[1] == 'V':
-            Vlist[i[0] - 1] = distanceTable[i][0]
-        elif i[1] == 'E':
-            Elist[i[0] - 1] = distanceTable[i][0]
+    # print table_df
+    print distanceTable
+    print table
+
+    for i in range(1, N+1):
+        for scenario in Scenarios:
+            if scenario == 'B':
+                Blist.append(table[(i, scenario)])
+            elif scenario == 'P':
+                Plist.append(table[(i, scenario)])
+            elif scenario == 'V':
+                Vlist.append(table[(i, scenario)])
+            elif scenario == 'E':
+                Elist.append(table[(i, scenario)])
     fig, ax = plt.subplots()
     index = np.arange(N)
     bar_width = 0.2
@@ -83,6 +99,7 @@ def main():
                      color='purple',
                      # error_kw=error_config,
                      label='Virtual')
+    # Empty bar - adds the spaces between the bars
     rects4 = plt.bar(index + bar_width * 2, [0]*N, bar_width,
                      alpha=opacity,
                      color='w',
@@ -92,7 +109,7 @@ def main():
 
     plt.xlabel('Agents')
     plt.ylabel('Dist from T')
-    plt.title('Distance from the Truth with ' + str(Runs) + ' simulations')
+    plt.title('Distance from the Truth with ' + str(Runs) + ' simulations \nPopulation size: ' + str(PopSize))
     plt.xticks(index - bar_width / 2, range(1, N + 1))
     plt.legend()
 
