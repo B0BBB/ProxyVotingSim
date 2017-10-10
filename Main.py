@@ -35,15 +35,20 @@ def main():
             counter += 1
 
     table = {}
+    # Creates the table dict, which contains the average distances from all the Runs (simulations),
+    # if it's an empty list will add 'None' - for the V scenario
     for n, s in distanceTable:
         if distanceTable[(n, s)]:
             table[(n, s)] = np.average(distanceTable[(n, s)])
         else:
             table[(n, s)] = None
+
+    # Creating an empty list for each scenario
     Blist, Plist, Vlist, Elist = [], [], [], []
 
     print distanceTable
     print table
+
     # Create list with the average distances for each scenario
     for i in range(1, N + 1):
         for scenario in Scenarios:
@@ -55,9 +60,9 @@ def main():
                 Vlist.append(table[(i, scenario)])
             elif scenario.upper() == 'E':
                 Elist.append(table[(i, scenario)])
-    fig, ax = plt.subplots()
-    index = np.arange(N)
 
+    index = np.arange(N)
+    # Each plot function is a specific line (scenario)
     plt.plot(index, Blist, color='b', linestyle='--', linewidth=2, marker='o', markerfacecolor='b',
              markersize=3, label='B')
     plt.plot(index, Plist, color='m', linestyle='-.', linewidth=2, marker='D', markerfacecolor='m',
@@ -67,13 +72,15 @@ def main():
     plt.plot(index, Elist, color='g', linestyle='-', linewidth=2, marker='s', markerfacecolor='g',
              markersize=5, label='E')
 
-    plt.xlabel('Agents')
-    plt.ylabel('Dist from T')
+    plt.xlabel('Number of Agents')
+    plt.ylabel('Avg Dist from T')
     plt.title('Distance from the Truth with ' + str(Runs) + ' simulations \nPopulation size: ' + str(PopSize))
     plt.xticks(index, range(1, N + 1))
+    # Legend Box appearance
     plt.legend(shadow=True, fancybox=True)
-
+    # Auto layout design function
     plt.tight_layout()
+    # The rendering function - shows the output on the screen
     plt.show()
 
 
