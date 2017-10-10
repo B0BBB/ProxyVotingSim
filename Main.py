@@ -17,12 +17,7 @@ def main():
     create_mel_dist(Truth, PHI, hamming, K)
     data = create_f_pop(PopSize, Mel)
     distanceTable = defaultdict(list)
-    distTable = {('Agents', 'Scenario'): [], 'Distance': []}
-    for i in range(1, N+1):
-        for j in Scenarios:
-            distTable['Agents', 'Scenario']
     counter = 1
-    # TODO: calculate the V scenario only when n>=Vnearest
     for n in range(1, N + 1):
         for run in range(Runs):
             activeAgents = sample(data, n)
@@ -38,9 +33,6 @@ def main():
                 result = bm_majority_vote(ballots)
                 distanceTable[(n, scenario)] += [hamming(result, Truth)]
             counter += 1
-            # print 'Scenario ', scenario, 'result :', hamming(result, Truth)
-    # for scenario, n in distanceTable:
-    #     print 'the average distance for ', scenario, 'with', n, 'agents' , 'is ', float(sum(distanceTable[(scenario, n)])) / float(len(distanceTable[(scenario, n)]))
     with open('Test1.csv', 'w') as write_file:
         writer = csv.writer(write_file, lineterminator='\n')
         fieldnames2 = ["Scenario", "Agents", "Avg dist"]
@@ -51,14 +43,11 @@ def main():
     table = {}
     for n, s in distanceTable:
         table[(n, s)] = np.average(distanceTable[(n, s)])
-    # table_df = pd.DataFrame(table)
     Blist, Plist, Vlist, Elist = [], [], [], []
-    agents = range(1, N + 1)
 
-    # print table_df
     print distanceTable
     print table
-
+    # Create list with the average distances for each scenario
     for i in range(1, N+1):
         for scenario in Scenarios:
             if scenario == 'B':

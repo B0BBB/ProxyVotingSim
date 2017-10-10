@@ -20,7 +20,7 @@ def create_mel_dist(t, phi, dist, k):
 
 
 # Creates the population profile
-# returns a list of tuples [(),(), ... ,()]
+# returns a list of VotingAgent objects [VotingAgent, VotingAgent, ...]
 def create_f_pop(f, dist):
     pop = []
     p = multinomial(f, dist.values())
@@ -91,10 +91,11 @@ def assign_virtual_proxies(proxies, pop):
     return pop
 
 
+# Should run at the beginning of a simulation, an set the Agents variables to default values according to the scenario
 def reset_active_agents(pop, s):
-    for agent in pop:
-        agent.reset_agent()
     if 'V' in s or 'v' in s:
         VotingAgent.virtual_scenario = True
     else:
         VotingAgent.virtual_scenario = False
+    for agent in pop:
+        agent.reset_agent()
