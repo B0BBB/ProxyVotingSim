@@ -58,11 +58,11 @@ def bm_majority_vote(ballots):
 def create_ballots(pop, agents, s):
     for agent in agents:
         agent.isActive = True
-    if s == 'B' or s == 'b':
+    if s.upper() == 'B':
         ballots = agents
-    elif s == 'P' or s == 'p':
+    elif s.upper() == 'P':
         ballots = assign_proxies(agents, pop)
-    elif 'V' in s or 'v' in s:
+    elif 'V' in s.upper():
         ballots = assign_virtual_proxies(agents, pop)
     else:
         for agent in pop:
@@ -93,7 +93,7 @@ def assign_virtual_proxies(proxies, pop):
 
 # Should run at the beginning of a simulation, an set the Agents variables to default values according to the scenario
 def reset_active_agents(pop, s):
-    if 'V' in s or 'v' in s:
+    if 'V' in s.upper():
         VotingAgent.virtual_scenario = True
     else:
         VotingAgent.virtual_scenario = False

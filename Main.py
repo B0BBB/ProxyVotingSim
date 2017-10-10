@@ -26,81 +26,52 @@ def main():
                 # If number of agents smaller than Vnearest append 0 and continue
                 if scenario.upper() == 'V':
                     if n < Vnearest:
-                        distanceTable[(n, scenario)] += [0]
+                        distanceTable[(n, scenario)] += []
                         continue
                 reset_active_agents(data, scenario)
                 ballots = create_ballots(data, activeAgents, scenario)
                 result = bm_majority_vote(ballots)
                 distanceTable[(n, scenario)] += [hamming(result, Truth)]
             counter += 1
-    with open('Test1.csv', 'w') as write_file:
-        writer = csv.writer(write_file, lineterminator='\n')
-        fieldnames2 = ["Scenario", "Agents", "Avg dist"]
-        writer.writerow(fieldnames2)
-        for n, s in distanceTable:
-            writer.writerow([n, s, np.average(distanceTable[(n, s)])])
-    write_file.close()
+
     table = {}
     for n, s in distanceTable:
-        table[(n, s)] = np.average(distanceTable[(n, s)])
+        if distanceTable[(n, s)]:
+            table[(n, s)] = np.average(distanceTable[(n, s)])
+        else:
+            table[(n, s)] = None
     Blist, Plist, Vlist, Elist = [], [], [], []
 
     print distanceTable
     print table
     # Create list with the average distances for each scenario
-    for i in range(1, N+1):
+    for i in range(1, N + 1):
         for scenario in Scenarios:
-            if scenario == 'B':
+            if scenario.upper() == 'B':
                 Blist.append(table[(i, scenario)])
-            elif scenario == 'P':
+            elif scenario.upper() == 'P':
                 Plist.append(table[(i, scenario)])
-            elif scenario == 'V':
+            elif scenario.upper() == 'V':
                 Vlist.append(table[(i, scenario)])
-            elif scenario == 'E':
+            elif scenario.upper() == 'E':
                 Elist.append(table[(i, scenario)])
     fig, ax = plt.subplots()
     index = np.arange(N)
-    bar_width = 0.2
 
-    opacity = 0.4
-    error_config = {'ecolor': '0.3'}
-
-    rects1 = plt.bar(index - bar_width * 2, Blist, bar_width,
-                     alpha=opacity,
-                     color='b',
-                     # error_kw=error_config,
-                     label='Basic')
-
-    rects2 = plt.bar(index - bar_width , Plist, bar_width,
-                     alpha=opacity,
-                     color='r',
-                     # error_kw=error_config,
-                     label='Proxy')
-
-    rects3 = plt.bar(index, Elist, bar_width,
-                     alpha=opacity,
-                     color='g',
-                     # error_kw=error_config,
-                     label='E scenario')
-
-    rects4 = plt.bar(index + bar_width, Vlist, bar_width,
-                     alpha=opacity,
-                     color='purple',
-                     # error_kw=error_config,
-                     label='Virtual')
-    # Empty bar - adds the spaces between the bars
-    rects4 = plt.bar(index + bar_width * 2, [0]*N, bar_width,
-                     alpha=opacity,
-                     color='w',
-                     # error_kw=error_config,
-                     # label='Virtual'
-                     )
+    plt.plot(index, Blist, color='b', linestyle='--', linewidth=2, marker='o', markerfacecolor='b',
+             markersize=3, label='B')
+    plt.plot(index, Plist, color='m', linestyle='-.', linewidth=2, marker='D', markerfacecolor='m',
+             markersize=3, label='P')
+    plt.plot(index, Vlist, color='c', linestyle=':', linewidth=2, marker='p', markerfacecolor='c',
+             markersize=5, label='V')
+    plt.plot(index, Elist, color='g', linestyle='-', linewidth=2, marker='s', markerfacecolor='g',
+             markersize=5, label='E')
 
     plt.xlabel('Agents')
     plt.ylabel('Dist from T')
     plt.title('Distance from the Truth with ' + str(Runs) + ' simulations \nPopulation size: ' + str(PopSize))
-    plt.xticks(index - bar_width / 2, range(1, N + 1))
-    plt.legend()
+    plt.xticks(index, range(1, N + 1))
+    plt.legend(shadow=True, fancybox=True)
 
     plt.tight_layout()
     plt.show()
