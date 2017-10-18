@@ -1,10 +1,8 @@
-from itertools import product
-from time import time
-from collections import OrderedDict
-from numpy.random import multinomial
-from random import sample, uniform, randint
+from random import uniform, randint
+
 # Library located at https://pypi.python.org/pypi/Distance/
 from distance import hamming
+
 from config import *
 
 
@@ -15,7 +13,7 @@ class VotingAgent:
         self.location = location
         self.isActive = False
         self.weight = 1
-        self.distance = hamming(Truth, location)
+        self.distance = hamming(Truth, location) + uniform(0, 0.1)
         self.dist_mat = {}
         self.virtual_location = []
         self.proxy = None
@@ -41,16 +39,16 @@ class VotingAgent:
         assert self.dist_mat, 'Proxies distances matrix is empty'
         nearest_proxies = sorted(self.dist_mat, key=self.dist_mat.get)[:Vnearest]
         for proxy in nearest_proxies:
-            proxy.weight += float(1)/Vnearest
+            proxy.weight += float(1) / Vnearest
         templist = []
         for i in range(K):
             templist.insert(i, 0)
             for j in nearest_proxies:
                 templist[i] += j.location[i]
         for i, j in enumerate(templist):
-            if j > Vnearest/2.0:
+            if j > Vnearest / 2.0:
                 self.virtual_location.insert(i, 1)
-            elif j < Vnearest/2.0:
+            elif j < Vnearest / 2.0:
                 self.virtual_location.insert(i, 0)
             else:
                 self.virtual_location.insert(i, randint(0, 1))
