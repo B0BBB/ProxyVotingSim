@@ -9,31 +9,32 @@ Simulations for proxy voting
 
 `Main.py` - The main function of the program connects and puts into use all the other modules
 
-**config.py** 
-*PopSize*
+##config.py
+
+*PopSize*  
 Sets the population size
 
-*K*
+*K*  
 Sets the number of topics for voting
 
-*N*
+*N*  
 Sets the number of Active agents that will be sampled
 
-*Truth*
+*Truth*  
 Sets the ground truth
 
-*PHI*
+*PHI*  
 Sets the parameter in the mellow distribution model for the population
 
-*Vnearest*
+*Vnearest*  
 Sets the number of nearest proxies that will be chosen in the virtual scenario
 
-*Runs*
+*Runs*  
 Sets the number of simulation that will run for each combination of scenario (s) and number of agents (n)
 
-*Global variables:*
-Mel = OrderedDict()
+###Global variables:  
+Mel = OrderedDict()  
 The dictionary that holds the sampled population
 
-Scenarios = ['E', 'V', 'P', 'B']
+Scenarios = ['E', 'V', 'P', 'B']  
 A list of the scenarios that will run
