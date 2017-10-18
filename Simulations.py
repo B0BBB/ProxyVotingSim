@@ -1,9 +1,9 @@
 from itertools import product
-from time import time
+from random import randint
+
 from numpy.random import multinomial
-from random import sample, uniform, randint
+
 # Library located at https://pypi.python.org/pypi/Distance/
-from distance import hamming
 from VotingAgent import VotingAgent
 from config import *
 
@@ -89,6 +89,14 @@ def assign_virtual_proxies(proxies, pop):
         agent.calc_dist_mat(proxies)
         agent.set_virtual_proxy()
     return pop
+
+
+# returns a list of the weights of the proxies sorted by their distance from the truth 1st proxy is the closest
+def get_proxy_ranks(proxies):
+    weights = []
+    for agent in sorted(proxies, key=lambda proxy: proxy.distance):
+        weights.append(agent.weight)
+    return weights
 
 
 # Should run at the beginning of a simulation, an set the Agents variables to default values according to the scenario
