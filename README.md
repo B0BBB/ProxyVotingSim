@@ -9,7 +9,7 @@ Simulations for proxy voting
 
 `Main.py` - The main function of the program connects and puts into use all the other modules
 
-##config.py
+## config.py
 
 *PopSize*  
 Sets the population size
@@ -32,7 +32,7 @@ Sets the number of nearest proxies that will be chosen in the virtual scenario
 *Runs*  
 Sets the number of simulation that will run for each combination of scenario (s) and number of agents (n)
 
-###Global variables:  
+### Global variables:  
 Mel = OrderedDict()  
 The dictionary that holds the sampled population
 
