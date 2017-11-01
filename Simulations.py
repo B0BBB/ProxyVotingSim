@@ -1,4 +1,4 @@
-from itertools import product
+from itertools import combinations, permutations
 from random import randint
 
 from numpy.random import multinomial
@@ -28,6 +28,19 @@ def create_f_pop(f, dist):
         for j in range(p[i]):
             pop.append(VotingAgent(vec))
     return pop
+
+
+# Kendell's Tao distance between vector v and u
+def kendall_tau(v, u):
+    pairs = combinations(v, 2)
+    dist = 0
+    for x, y in pairs:
+        a = v.index(x) - v.index(y)
+        b = u.index(x) - u.index(y)
+        # if discordant (different signs)
+        if a * b < 0:
+            dist += 1
+    return dist
 
 
 # Boyer Moore majority vote algorithm, tie will be {0,1} randomly
