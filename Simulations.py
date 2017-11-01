@@ -1,40 +1,70 @@
-from itertools import product
+from itertools import permutations, combinations
 from random import randint
 
 from numpy.random import multinomial
 
 # Library located at https://pypi.python.org/pypi/Distance/
 from VotingAgent import VotingAgent
-from config import *
+from config import Mel, A
 
 
 # Creates the Mellows model distribution
 # Mel {(index, vector): probability}
-def create_mel_dist(t, phi, dist, k):
-    a = product(range(2), repeat=k)
-    for i, vec in enumerate(a):
+def create_mel_dist(t, phi, dist):
+    l = permutations(range(A))
+    temp = []
+    for vec in l:
+        temp.append(trans2bin(A, vec))
+    for i, vec in enumerate(temp):
         Mel[(i, vec)] = phi ** dist(t, vec)
     z = float(sum(Mel.values()))
     for i in Mel:
         Mel[i] = Mel[i] / z
 
 
+# A transformation of an ordinal vector to a binary vector, in reference to T vector
+def trans2bin(A, v):
+    pairs = combinations(range(A), 2)
+    result = []
+    for x, y in pairs:
+        a = v.index(y) - v.index(x)
+        if a < 0:
+            result.append(1)
+        else:
+            result.append(0)
+    return tuple(result)
+
+
+# Kendell's Tao distance between vector A and B
+def kendall_tau(v, u):
+    pairs = combinations(v, 2)
+    dist = 0
+    for x, y in pairs:
+        a = v.index(x) - v.index(y)
+        b = u.index(x) - u.index(y)
+        # if discordant (different signs)
+        if a * b < 0:
+            dist += 1
+    return dist
+
+
 # Creates the population profile
 # returns a list of VotingAgent objects [VotingAgent, VotingAgent, ...]
-def create_f_pop(f, dist):
+def create_f_pop(f, t, dist):
     pop = []
     p = multinomial(f, dist.values())
     for i, vec in Mel:
         for j in range(p[i]):
-            pop.append(VotingAgent(vec))
+            pop.append(VotingAgent(vec, t))
     return pop
 
 
 # Boyer Moore majority vote algorithm, tie will be {0,1} randomly
 # returns a single vector {0,1} of size k
-def bm_majority_vote(ballots):
+# TODO: Shouldnt be calculated with K
+def bm_majority_vote(k, ballots):
     result = []
-    for i in range(K):
+    for i in range(k):
         m = None
         count = 0
         for agent in ballots:

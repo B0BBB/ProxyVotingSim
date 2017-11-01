@@ -3,17 +3,17 @@ from random import uniform, randint
 # Library located at https://pypi.python.org/pypi/Distance/
 from distance import hamming
 
-from config import *
+from config import Truth, Vnearest, K
 
 
 class VotingAgent:
     virtual_scenario = None
 
-    def __init__(self, location):
+    def __init__(self, location, t):
         self.location = location
         self.isActive = False
         self.weight = 1
-        self.distance = hamming(Truth, location) + uniform(0, 0.1)
+        self.distance = hamming(t, location) + uniform(0, 0.1)
         self.dist_mat = {}
         self.virtual_location = []
         self.proxy = None
