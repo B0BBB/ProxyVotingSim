@@ -1,5 +1,4 @@
-from itertools import combinations, permutations
-from random import randint
+from itertools import permutations
 
 from numpy.random import multinomial
 
@@ -10,8 +9,8 @@ from config import *
 
 # Creates the Mellows model distribution
 # Mel {(index, vector): probability}
-def create_mel_dist(t, phi, dist, k):
-    a = product(range(2), repeat=k)
+def create_mel_dist(t, phi, dist):
+    a = permutations(t)
     for i, vec in enumerate(a):
         Mel[(i, vec)] = phi ** dist(t, vec)
     z = float(sum(Mel.values()))
@@ -28,43 +27,6 @@ def create_f_pop(f, dist):
         for j in range(p[i]):
             pop.append(VotingAgent(vec))
     return pop
-
-
-# Kendell's Tao distance between vector v and u
-def kendall_tau(v, u):
-    pairs = combinations(v, 2)
-    dist = 0
-    for x, y in pairs:
-        a = v.index(x) - v.index(y)
-        b = u.index(x) - u.index(y)
-        # if discordant (different signs)
-        if a * b < 0:
-            dist += 1
-    return dist
-
-
-# Boyer Moore majority vote algorithm, tie will be {0,1} randomly
-# returns a single vector {0,1} of size k
-def bm_majority_vote(ballots):
-    result = []
-    for i in range(K):
-        m = None
-        count = 0
-        for agent in ballots:
-            if count == 0:
-                m = agent.get_vote()[i]
-                count = 1
-            elif m == agent.get_vote()[i]:
-                count += 1
-            else:
-                count -= 1
-        if count > 0:
-            result.append(m)
-        elif count < 0:
-            result.append(abs(1 - m))
-        else:
-            result.append(randint(0, 1))
-    return result
 
 
 # Creates the Voters profile according to the given Scenario

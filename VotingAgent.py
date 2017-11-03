@@ -1,8 +1,5 @@
 from random import uniform, randint
 
-# Library located at https://pypi.python.org/pypi/Distance/
-from distance import hamming
-
 from config import *
 
 
@@ -13,7 +10,7 @@ class VotingAgent:
         self.location = location
         self.isActive = False
         self.weight = 1
-        self.distance = hamming(Truth, location) + uniform(0, 0.1)
+        self.distance = distance(Truth, location) + uniform(0, 0.1)
         self.dist_mat = {}
         self.virtual_location = []
         self.proxy = None
@@ -21,7 +18,7 @@ class VotingAgent:
     # Creates a matrix with the distances from self to each proxy - with addition of some noise for random tie breaking
     def calc_dist_mat(self, proxies):
         for i in proxies:
-            self.dist_mat[i] = hamming(self.location, i.location) + uniform(0, 0.1)
+            self.dist_mat[i] = distance(self.location, i.location) + uniform(0, 0.1)
 
     # Sets the proxy with the minimal distance using the distances matrix
     def set_proxy(self, v=virtual_scenario):

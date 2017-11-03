@@ -1,12 +1,15 @@
 from collections import OrderedDict
+from utils import kendall_tau
 
 # This is the configuration module, which will set the Global variables
-PopSize = 300
-K = 5
+PopSize = 100
+A = 4
 N = 5
-Truth = (0,) * K
+WN = 5
+Truth = range(A)
 PHI = 0.95
 Mel = OrderedDict()
 Vnearest = 3
-Scenarios = ['E', 'V', 'P', 'B']
-Runs = 1000
+Scenarios = ['E', 'P', 'B']
+Runs = 100
+distance = kendall_tau
