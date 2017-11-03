@@ -1,5 +1,6 @@
 from random import uniform, randint
 
+from utils import borda_voting_rule
 from config import *
 
 
@@ -37,18 +38,7 @@ class VotingAgent:
         nearest_proxies = sorted(self.dist_mat, key=self.dist_mat.get)[:Vnearest]
         for proxy in nearest_proxies:
             proxy.weight += float(1) / Vnearest
-        templist = []
-        for i in range(K):
-            templist.insert(i, 0)
-            for j in nearest_proxies:
-                templist[i] += j.location[i]
-        for i, j in enumerate(templist):
-            if j > Vnearest / 2.0:
-                self.virtual_location.insert(i, 1)
-            elif j < Vnearest / 2.0:
-                self.virtual_location.insert(i, 0)
-            else:
-                self.virtual_location.insert(i, randint(0, 1))
+        self.virtual_location = borda_voting_rule(nearest_proxies, A)
 
     # Returns the vote vector according to the scenario
     def get_vote(self):

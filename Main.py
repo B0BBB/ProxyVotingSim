@@ -13,14 +13,13 @@ from config import *
 
 def main():
     print 'Creating Data Set'
-
     distance_table = defaultdict(list)
     weight_table = defaultdict(list)
     counter = 1
     create_mel_dist(Truth, PHI, distance)
-    data = create_f_pop(PopSize, Mel)
     for n in range(2, N + 1):
         for run in range(Runs):
+            data = create_f_pop(PopSize, Mel)
             active_agents = sample(data, n)
             for scenario in Scenarios:
                 # If number of agents smaller than Vnearest append 0 and continue
@@ -41,8 +40,8 @@ def main():
         print 'Simulation number ', counter, ' Number of active agents: ', n
 
     dist_table = {}
-    weight_table_p = [0] * N
-    weight_table_v = [0] * N
+    weight_table_p = [0] * WN
+    weight_table_v = [0] * WN
     # Creates the table dict, which contains the average distances from all the Runs (simulations),
     # if it's an empty list will add 'None' - for the V scenario
     for n, s in distance_table:
@@ -83,7 +82,7 @@ def main():
     # Each plot function is a specific line (scenario)
     avg_errors.extend(plt.plot(index_a, Blist, color='b', linestyle='--', marker='o', markerfacecolor='b', label='B'))
     avg_errors.extend(plt.plot(index_a, Plist, color='m', linestyle='-.', marker='D', markerfacecolor='m', label='P'))
-    # avg_errors.extend(plt.plot(index_a, Vlist, color='c', linestyle=':', marker='p', markerfacecolor='c', label='V'))
+    avg_errors.extend(plt.plot(index_a, Vlist, color='c', linestyle=':', marker='p', markerfacecolor='c', label='V'))
     avg_errors.extend(plt.plot(index_a, Elist, color='g', linestyle='-', marker='s', markerfacecolor='g', label='E'))
     plt.setp(avg_errors, linewidth=2, markersize=5)
 
@@ -105,9 +104,10 @@ def main():
     avg_weights = []
     avg_weights.extend(
         plt.plot(index_b, weight_table_p, color='y', linestyle='-', marker='s', markerfacecolor='y', label='Proxy'))
-    # avg_weights.extend(
-    #     plt.plot(index_b, weight_table_v, color='r', linestyle='-', marker='s', markerfacecolor='r', label='Virtual Proxy'))
-    # plt.setp(avg_weights, linewidth=2, markersize=5)
+    avg_weights.extend(
+        plt.plot(index_b, weight_table_v, color='r', linestyle='-', marker='s', markerfacecolor='r',
+                 label='Virtual Proxy'))
+    plt.setp(avg_weights, linewidth=2, markersize=5)
 
     plt.xlabel('The rank of the Active agent')
     plt.ylabel('Average Weight')
