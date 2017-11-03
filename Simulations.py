@@ -3,7 +3,7 @@ from random import randint
 
 from numpy.random import multinomial
 
-# Library located at https://pypi.python.org/pypi/Distance/
+
 from VotingAgent import VotingAgent
 from config import Mel, A
 
@@ -61,7 +61,6 @@ def create_f_pop(f, t, dist):
 
 # Boyer Moore majority vote algorithm, tie will be {0,1} randomly
 # returns a single vector {0,1} of size k
-# TODO: Shouldnt be calculated with K
 def bm_majority_vote(k, ballots):
     result = []
     for i in range(k):

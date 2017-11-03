@@ -1,12 +1,9 @@
 from collections import defaultdict
 from random import sample
 from time import time
-from itertools import combinations
 
 import matplotlib.pyplot as plt
 import numpy as np
-# Library located at https://pypi.python.org/pypi/Distance/
-from distance import hamming
 
 from Simulations import create_mel_dist, create_f_pop, create_ballots, bm_majority_vote, reset_active_agents, \
     get_proxy_ranks, trans2bin
@@ -20,7 +17,7 @@ def main():
     binary_truth = trans2bin(A, Truth)
     for n in range(2, N + 1):
         for run in range(Runs):
-            create_mel_dist(binary_truth, PHI, hamming)
+            create_mel_dist(binary_truth, PHI, distance)
             data = create_f_pop(PopSize, binary_truth, Mel)
             activeAgents = sample(data, n)
             for scenario in Scenarios:
@@ -32,18 +29,18 @@ def main():
                 reset_active_agents(data, scenario)
                 ballots = create_ballots(data, activeAgents, scenario)
                 result = bm_majority_vote(K, ballots)
-                distanceTable[(n, scenario)] += [hamming(result, binary_truth)]
-                if scenario.upper() == 'P' and n == N:
+                distanceTable[(n, scenario)] += [distance(result, binary_truth)]
+                if scenario.upper() == 'P' and n == WN:
                     # currently saves the weight, the key is the number of the simulation
                     weightTable[('P', counter)] += get_proxy_ranks(activeAgents)
-                elif scenario.upper() == 'V' and n == N:
+                elif scenario.upper() == 'V' and n == WN:
                     weightTable[('V', counter)] = get_proxy_ranks(activeAgents)
             counter += 1
         print 'Simulation number ', counter, ' Number of agents ', n + 1
 
     dist_table = {}
-    wtable_P = [0] * N
-    wtable_V = [0] * N
+    wtable_P = [0] * WN
+    wtable_V = [0] * WN
     # Creates the table dict, which contains the average distances from all the Runs (simulations),
     # if it's an empty list will add 'None' - for the V scenario
     for n, s in distanceTable:
@@ -52,13 +49,13 @@ def main():
         else:
             dist_table[(n, s)] = None
 
-    for i in range(N):
+    for i in range(WN):
         for k in weightTable:
             if k[0] == 'P':
                 wtable_P[i] += weightTable[k][i]
             else:
                 wtable_V[i] += weightTable[k][i]
-    for i in range(N):
+    for i in range(WN):
         wtable_V[i] = wtable_V[i] / float(Runs)
         wtable_P[i] = wtable_P[i] / float(Runs)
 
@@ -112,7 +109,7 @@ def main():
     # set a new current figure
     plt.figure(2)
     # Plotting the weights graphs
-    index_b = np.arange(1, N + 1)
+    index_b = np.arange(1, WN + 1)
     avg_weights = []
     avg_weights.extend(
         plt.plot(index_b, wtable_P, color='y', linestyle='-', marker='s', markerfacecolor='y', label='Proxy'))
@@ -124,7 +121,7 @@ def main():
     plt.ylabel('Average Weight')
     plt.title('The average weights of the proxies ' + str(Runs) + ' simulations \nPopulation size: ' + str(
         PopSize) + ' A= ' + str(A) + ' PHI= ' + str(PHI))
-    plt.xticks(index_b, range(1, N + 1))
+    plt.xticks(index_b, range(1, WN + 1))
     # Legend Box appearance
     plt.legend(shadow=True, fancybox=True)
     # Auto layout design function

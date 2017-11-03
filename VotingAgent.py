@@ -1,9 +1,7 @@
 from random import uniform, randint
 
-# Library located at https://pypi.python.org/pypi/Distance/
-from distance import hamming
-
-from config import Truth, Vnearest, K
+from config import Truth, Vnearest, K, distance
+from utils import bm_majority_vote
 
 
 class VotingAgent:
@@ -13,7 +11,7 @@ class VotingAgent:
         self.location = location
         self.isActive = False
         self.weight = 1
-        self.distance = hamming(t, location) + uniform(0, 0.1)
+        self.distance = distance(t, location) + uniform(0, 0.1)
         self.dist_mat = {}
         self.virtual_location = []
         self.proxy = None
@@ -21,7 +19,7 @@ class VotingAgent:
     # Creates a matrix with the distances from self to each proxy - with addition of some noise for random tie breaking
     def calc_dist_mat(self, proxies):
         for i in proxies:
-            self.dist_mat[i] = hamming(self.location, i.location) + uniform(0, 0.1)
+            self.dist_mat[i] = distance(self.location, i.location) + uniform(0, 0.1)
 
     # Sets the proxy with the minimal distance using the distances matrix
     def set_proxy(self, v=virtual_scenario):
@@ -40,18 +38,7 @@ class VotingAgent:
         nearest_proxies = sorted(self.dist_mat, key=self.dist_mat.get)[:Vnearest]
         for proxy in nearest_proxies:
             proxy.weight += float(1) / Vnearest
-        templist = []
-        for i in range(K):
-            templist.insert(i, 0)
-            for j in nearest_proxies:
-                templist[i] += j.location[i]
-        for i, j in enumerate(templist):
-            if j > Vnearest / 2.0:
-                self.virtual_location.insert(i, 1)
-            elif j < Vnearest / 2.0:
-                self.virtual_location.insert(i, 0)
-            else:
-                self.virtual_location.insert(i, randint(0, 1))
+        self.virtual_location = bm_majority_vote(nearest_proxies, K)
 
     # Returns the vote vector according to the scenario
     def get_vote(self):
