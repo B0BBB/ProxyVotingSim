@@ -1,8 +1,11 @@
 from collections import defaultdict
 from random import sample
+from time import time
+import csv
 
 import matplotlib.pyplot as plt
 import numpy as np
+from sympy.printing.pretty.pretty_symbology import pretty_symbol
 
 # Library located at https://pypi.python.org/pypi/Distance/
 from Simulations import create_mel_dist, create_f_pop, create_ballots, reset_active_agents, \
@@ -12,14 +15,20 @@ from config import *
 
 
 def main():
-    print 'Creating Data Set'
+    print 'All set, the parameters are:', pretty_symbol('phi'), '=', PHI, 'A =', A, 'N =', N, 'Iterations =', Runs
+    print 'Population Size =', PopSize, 'Truth =', Truth, 'Vnearest =', Vnearest
+    print 'Weights will be calculated for', WN, 'Agents \n'
+    print 'Creating Mellow\'s Distribution for the Data Set \n'
     distance_table = defaultdict(list)
     weight_table = defaultdict(list)
     counter = 1
     create_mel_dist(Truth, PHI, distance)
+    print 'Creating Population \n'
+    data = create_f_pop(PopSize, Mel)
+    print 'Running Simulations \n'
     for n in range(2, N + 1):
+        stime = time()
         for run in range(Runs):
-            data = create_f_pop(PopSize, Mel)
             active_agents = sample(data, n)
             for scenario in Scenarios:
                 # If number of agents smaller than Vnearest append 0 and continue
@@ -37,7 +46,11 @@ def main():
                 elif scenario.upper() == 'V' and n == WN:
                     weight_table[('V', counter)] = get_proxy_ranks(active_agents)
             counter += 1
-        print 'Simulation number ', counter, ' Number of active agents: ', n
+        if (time() - stime) < 60:
+            print 'Simulation number', counter, 'Number of active agents:', n, 'Exec Time:', int(time() - stime), 'Sec '
+        else:
+            print 'Simulation number', counter, 'Number of active agents:', n, 'Exec Time:', (
+                                                                                                 time() - stime) / 60, 'Min '
 
     dist_table = {}
     weight_table_p = [0] * WN
@@ -89,13 +102,23 @@ def main():
     plt.xlabel('Number of Active Subset')
     plt.ylabel('Avg Dist from T')
     plt.title(
-        'Distance from the Truth with ' + str(Runs) + ' simulations \nPopulation size: ' + str(PopSize) + ' PHI=' + str(
-            PHI) + ' A=' + str(A))
+        'Distance from the Truth with ' + str(Runs) + ' simulations \nPopulation size: ' + str(PopSize) + pretty_symbol(
+            'phi') + str(PHI) + ' A=' + str(A))
     plt.xticks(index_a, range(2, N + 1))
     # Legend Box appearance
     plt.legend(shadow=True, fancybox=True)
     # Auto layout design function
     plt.tight_layout()
+
+    # # Generates a unique image name
+    # figname = '.\Plots\Error'
+    # figname += 'A=' + str(A) + 'PHI=' + str(PHI) + 'V=' + str(Vnearest)
+    # figname += '-' + str(time())
+    # figname += '.png'
+    # # Saves the generated figures
+    # plt.savefig(figname, dpi=200)
+    # # Closes the current figure
+    # plt.close()
 
     # set a new current figure
     plt.figure(2)
@@ -118,8 +141,25 @@ def main():
     # Auto layout design function
     plt.tight_layout()
 
+    # # Generates a unique image name
+    # figname = '.\Plots\Weights'
+    # figname += 'A= ' + str(A) + ' PHI= ' + str(PHI) + ' WN= ' + str(WN)
+    # figname += ' -' + str(time())
+    # figname += '.png'
+    # # Saves the generated figures
+    # plt.savefig(figname, dpi=150)
+    # # Closes the current figure
+    # plt.close()
+
     # The rendering function - shows the output on the screen
     plt.show()
+    # Record the population in a CSV file
+    with open('some.csv', 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Agents Location'])
+        for i in data:
+            x = tuple(['D=', distance(Truth, i.location)])
+            writer.writerow(i.location + x)
 
 
 if __name__ == '__main__':
