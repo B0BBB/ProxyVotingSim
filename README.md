@@ -9,16 +9,23 @@ Simulations for proxy voting
 
 `Main.py` - The main function of the program connects and puts into use all the other modules
 
-## config.py
+`utils.py` - Contains Borda voting rule, BM - majority voting rule and the Kendall Tau distance function
 
+## config.py
 *PopSize*  
 Sets the population size
 
 *K*  
 Sets the number of topics for voting
 
+*A*   
+Sets the number of alternatives
+
 *N*  
 Sets the number of Active agents that will be sampled
+
+*WN*  
+Sets the number of the agents for the weight graphs
 
 *Truth*  
 Sets the ground truth
